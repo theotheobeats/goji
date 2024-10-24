@@ -24,16 +24,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { registerSchema } from "../schemas";
+import { useRegister } from "@/app/(auth)/api/use-register";
 
 export const SignUpCard = () => {
-	const formSchema = z.object({
-		name: z.string().min(1, "Required"),
-		email: z.string().email(),
-		password: z.string().min(8, "Minimum eight characters"),
-	});
+	const { mutate } = useRegister();
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<z.infer<typeof registerSchema>>({
+		resolver: zodResolver(registerSchema),
 		defaultValues: {
 			name: "",
 			email: "",
@@ -41,9 +39,11 @@ export const SignUpCard = () => {
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof formSchema>) => {
-		console.log({ values });
+	const onSubmit = (values: z.infer<typeof registerSchema>) => {
+		console.log("submit triggered")
+		mutate({ json: values });
 	};
+
 	return (
 		<Card className="w-full h-full md:w-[487px] border-none shadow-none">
 			<CardHeader className="flex items-center justify-center text-center p-7">
