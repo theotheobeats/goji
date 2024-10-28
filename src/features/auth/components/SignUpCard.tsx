@@ -26,9 +26,12 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "../schemas";
 import { useRegister } from "@/app/(auth)/api/use-register";
+import { authClient } from "@/lib/auth-client"; //import the auth client
+import { useRouter } from "next/navigation";
 
 export const SignUpCard = () => {
 	const { mutate } = useRegister();
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof registerSchema>>({
 		resolver: zodResolver(registerSchema),
@@ -39,9 +42,25 @@ export const SignUpCard = () => {
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof registerSchema>) => {
-		console.log("submit triggered")
+	const onSubmit = async (values: z.infer<typeof registerSchema>) => {
 		mutate({ json: values });
+		const { error } = await authClient.signUp.email(
+			{
+				email: values.email,
+				password: values.password,
+				name: values.name,
+			},
+			{
+				onRequest: () => {},
+				onSuccess: () => {
+					//redirect to the dashboard
+					router.push("/dashboard");
+				},
+				onError: () => {
+					console.log(error);
+				},
+			}
+		);
 	};
 
 	return (
@@ -108,7 +127,7 @@ export const SignUpCard = () => {
 						/>
 
 						<Button disabled={false} size="lg" className="w-full">
-							Sign In
+							Sign Up
 						</Button>
 					</form>
 				</Form>
@@ -123,7 +142,7 @@ export const SignUpCard = () => {
 					className="w-full"
 					disabled={false}>
 					<FcGoogle className="mr-2 size-5" />
-					Login with Google
+					Sign Up with Google
 				</Button>
 				<Button
 					variant="secondary"
@@ -131,7 +150,7 @@ export const SignUpCard = () => {
 					className="w-full"
 					disabled={false}>
 					<FaGithub className="mr-2 size-5" />
-					Login with Github
+					Sign Up with Github
 				</Button>
 			</CardContent>
 			<div className="px-7">
@@ -140,7 +159,7 @@ export const SignUpCard = () => {
 			<CardContent className="p-7 flex items-center justify-center">
 				Already have an account?{" "}
 				<Link href="/sign-in" className="text-blue-700">
-					&nbsp;Sign In
+					&nbsp;Sign Up
 				</Link>
 			</CardContent>
 		</Card>

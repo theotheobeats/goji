@@ -20,9 +20,12 @@ import {
 import Link from "next/link";
 import { loginSchema } from "../schemas";
 import { useLogin } from "@/app/(auth)/api/use-login";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export const SignInCard = () => {
 	const { mutate } = useLogin();
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof loginSchema>>({
 		resolver: zodResolver(loginSchema),
@@ -32,8 +35,24 @@ export const SignInCard = () => {
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof loginSchema>) => {
+	const onSubmit = async (values: z.infer<typeof loginSchema>) => {
 		mutate({ json: values });
+		const { error } = await authClient.signIn.email(
+			{
+				email: values.email,
+				password: values.password,
+			},
+			{
+				onRequest: () => {},
+				onSuccess: () => {
+					//redirect to the dashboard
+					router.push("/dashboard");
+				},
+				onError: () => {
+					console.log(error);
+				},
+			}
+		);
 	};
 
 	return (
