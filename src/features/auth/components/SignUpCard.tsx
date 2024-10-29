@@ -63,6 +63,20 @@ export const SignUpCard = () => {
 		);
 	};
 
+	const googleSignUp = async () => {
+		const data = await authClient.signIn.social({
+			provider: "google",
+		});
+		console.log(data);
+	};
+
+	const githubSignUp = async () => {
+		const data = await authClient.signIn.social({
+			provider: "github",
+		});
+		console.log(data);
+	};
+
 	return (
 		<Card className="w-full h-full md:w-[487px] border-none shadow-none">
 			<CardHeader className="flex items-center justify-center text-center p-7">
@@ -140,7 +154,8 @@ export const SignUpCard = () => {
 					variant="secondary"
 					size="lg"
 					className="w-full"
-					disabled={false}>
+					disabled={false}
+					onClick={() => googleSignUp()}>
 					<FcGoogle className="mr-2 size-5" />
 					Sign Up with Google
 				</Button>
@@ -148,7 +163,8 @@ export const SignUpCard = () => {
 					variant="secondary"
 					size="lg"
 					className="w-full"
-					disabled={false}>
+					disabled={false}
+					onClick={() => githubSignUp()}>
 					<FaGithub className="mr-2 size-5" />
 					Sign Up with Github
 				</Button>
