@@ -1,10 +1,9 @@
-// app/dashboard/page.tsx
 import { Dashboard } from "@/features/auth/components/Dashboard";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function DashboardPage() {
+export default async function Home() {
 	const session = await auth.api.getSession({
 		headers: headers(),
 	});
@@ -13,9 +12,8 @@ export default async function DashboardPage() {
 	if (!session) {
 		redirect("/sign-in");
 	}
-
 	return (
-		<div className="container mx-auto">
+		<div className="flex gap-4">
 			<Dashboard session={session} />
 		</div>
 	);

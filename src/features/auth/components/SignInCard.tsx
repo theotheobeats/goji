@@ -46,7 +46,7 @@ export const SignInCard = () => {
 				onRequest: () => {},
 				onSuccess: () => {
 					//redirect to the dashboard
-					router.push("/dashboard");
+					router.push("/");
 				},
 				onError: () => {
 					console.log(error);
