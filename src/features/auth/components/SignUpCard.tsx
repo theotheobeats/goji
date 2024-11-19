@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "../schemas";
-import { useRegister } from "@/app/(auth)/api/use-register";
+import { useRegister } from "@/features/auth/api/use-register";
 import { authClient } from "@/lib/auth-client"; //import the auth client
 import { useRouter } from "next/navigation";
 

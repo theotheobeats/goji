@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import { loginSchema } from "../schemas";
-import { useLogin } from "@/app/(auth)/api/use-login";
+import { useLogin } from "@/features/auth/api/use-login";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
