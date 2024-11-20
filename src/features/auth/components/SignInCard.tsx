@@ -19,12 +19,11 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import { loginSchema } from "../schemas";
-import { useLogin } from "@/features/auth/api/use-login";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export const SignInCard = () => {
-	const { mutate } = useLogin();
 	const router = useRouter();
 
 	const form = useForm<z.infer<typeof loginSchema>>({
@@ -36,20 +35,21 @@ export const SignInCard = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-		mutate({ json: values });
-		const { error } = await authClient.signIn.email(
+		const response = await authClient.signIn.email(
 			{
 				email: values.email,
 				password: values.password,
 			},
 			{
-				onRequest: () => {},
+				onRequest: () => {
+					toast.loading("Logging in..")
+				},
 				onSuccess: () => {
-					//redirect to the dashboard
-					router.push("/");
+					toast.success("Logged in successfully!");
+					router.refresh();
 				},
 				onError: () => {
-					console.log(error);
+					toast.error("Failed to log in!");
 				},
 			}
 		);

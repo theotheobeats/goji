@@ -25,12 +25,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "../schemas";
-import { useRegister } from "@/features/auth/api/use-register";
 import { authClient } from "@/lib/auth-client"; //import the auth client
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export const SignUpCard = () => {
-	const { mutate } = useRegister();
 	const router = useRouter();
 
 	const form = useForm<z.infer<typeof registerSchema>>({
@@ -43,21 +42,24 @@ export const SignUpCard = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-		mutate({ json: values });
-		const { error } = await authClient.signUp.email(
+		const response = await authClient.signUp.email(
 			{
 				email: values.email,
 				password: values.password,
 				name: values.name,
 			},
 			{
-				onRequest: () => {},
+				onRequest: () => {
+					//show loading
+					toast.loading("Processing..");
+				},
 				onSuccess: () => {
 					//redirect to the dashboard
-					router.push("/dashboard");
+					toast.success("Account registered successfully!");
+					router.refresh();
 				},
 				onError: () => {
-					console.log(error);
+					toast.error("Failed to register!");
 				},
 			}
 		);

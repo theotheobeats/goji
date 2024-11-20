@@ -10,4 +10,5 @@ const routes = app.route("/auth", auth).route("/workspaces", workspaces);
 export const GET = handle(app);
 export const POST = handle(app);
 
+// Extracting the type of the app after routes
 export type AppType = typeof routes;
