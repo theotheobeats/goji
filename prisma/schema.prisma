@@ -11,16 +11,16 @@ datasource db {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  email         String       @unique
+  id            String    @id @default(cuid())
+  email         String    @unique
   name          String?
-  emailVerified Boolean      @default(false)
+  emailVerified Boolean   @default(false)
   image         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
-  Workspaces    Workspaces[]
+  Members       Members[]
 
   @@map("User")
 }
@@ -61,11 +61,26 @@ model Verification {
 }
 
 model Workspaces {
-  id        String   @id @default(cuid())
-  name      String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  name       String
+  inviteCode String?  @unique
+  createdAt  DateTime @default(now())
 
   @@map("workspaces")
+}
+
+enum Role {
+  member
+  admin
+}
+
+model Members {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  workspaceId String
+  role        Role     @default(member)
+  createdAt   DateTime @default(now())
+
+  @@map("members")
 }

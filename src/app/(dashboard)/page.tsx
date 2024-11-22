@@ -1,4 +1,4 @@
-import { CreateWorkspaceForm } from "@/features/workspaces/components/create-workspace-form";
+import { getWorkspaces } from "@/features/workspaces/actions";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -12,9 +12,12 @@ export default async function Home() {
 	if (!session) {
 		redirect("/sign-in");
 	}
-	return (
-		<div className="flex gap-4">
-			<CreateWorkspaceForm />
-		</div>
-	);
+
+	const workspaces = await getWorkspaces({ userId: session.user.id });
+
+	if (workspaces.length === 0) {
+		redirect("/workspace/create");
+	} else {
+		redirect(`/workspaces/${workspaces[0].id}`);
+	}
 }

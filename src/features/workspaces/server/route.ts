@@ -4,6 +4,8 @@ import { zValidator } from "@hono/zod-validator";
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { MemberRole } from "@/features/members/types";
+import { generateInviteCode } from "@/lib/utils";
 
 const prisma = new PrismaClient();
 const app = new Hono()
@@ -18,9 +20,23 @@ const app = new Hono()
 
 		const userId = session.user.id;
 
-		const workspaces = await prisma.workspaces.findMany({
+		const members = await prisma.members.findMany({
 			where: {
 				userId,
+			},
+		});
+
+		if (members.length === 0) {
+			return c.json({ data: [] });
+		}
+
+		const workspaceIds = members.map((member) => member.workspaceId);
+
+		const workspaces = await prisma.workspaces.findMany({
+			where: {
+				id: {
+					in: workspaceIds,
+				},
 			},
 		});
 
@@ -43,10 +59,15 @@ const app = new Hono()
 
 		// store the database to workspaces table
 		const workspace = await prisma.workspaces.create({
-			data: { name, userId },
+			data: { name, inviteCode: generateInviteCode(10) },
 		});
 
-		return c.json(workspace);
+		// create new member
+		await prisma.members.create({
+			data: { userId, workspaceId: workspace.id, role: MemberRole.ADMIN },
+		});
+
+		return c.json({ data: workspace });
 	});
 
 export default app;
